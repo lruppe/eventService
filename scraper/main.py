@@ -29,7 +29,7 @@ def get_events(response):
 
     return extracted_data
 
-if __name__ == '__main__':
+def initial_scrape():
     events = []
     session = requests.session()
     session.headers.update({
@@ -50,3 +50,64 @@ if __name__ == '__main__':
         for event in events:
             formatted_event = format_event(event)
             f.write(formatted_event + '\n')
+
+def get_details(url, session):
+    respone = session.get(url)
+    soup = BeautifulSoup(respone.text, 'html.parser')
+
+    # Extract the short description
+    short_description_div = soup.find('div', class_='LeadText--text')
+    if short_description_div is None:
+        short_description = ''
+    else:
+        short_description = short_description_div.get_text(strip=True)
+
+    # Navigate to the correct 'richtext' for the long description
+    article_section_plain = soup.find('div', class_='ArticleSection plain')
+    long_description_div = article_section_plain.find('div', class_='richtext')
+    # add a try catch block to handle the case where there is no description or dates
+    if long_description_div is None:
+        long_description = ''
+    else:
+        long_description = long_description_div.get_text(strip=True)
+
+    # Extract the first occurrence of dates
+    first_dates_div = soup.find('div', class_='SidebarWidget--body')
+
+    if first_dates_div is None:
+        dates = ''
+    else:
+        dates = first_dates_div.p.get_text(strip=True)
+
+    return {
+        'description': short_description + '\n' + long_description,
+        'dates': dates
+    }
+
+if __name__ == '__main__':
+    session = requests.session()
+    session.headers.update({
+        'User-Agent': 'Mozilla/5.0 (compatible; events/1.0)'
+    })
+
+    with open('events.txt', 'r') as f:
+        events = f.readlines()
+    event_with_deatils = []
+    for event in events:
+        event = event.strip()
+        title, description_overview, link = event.split(';')
+        # scrape details
+        details = get_details(link, session)
+
+        # clean
+        dates = details['dates'].replace(';', ',')
+        description = details['description'].replace(';', ',').replace('\n', ' ')
+
+        # append the title, description, dates and link to event_with_deatils
+        event_with_deatils.append(f"{title}; {description}; {dates}; {link}")
+        print(f"{title}; {description}; {dates}; {link}")
+
+    # print the title, descrption, deatils, dates and link to a file, ;-separated, utf-8 encoded
+    with open('events_details.txt', 'w', encoding='utf-8') as f:
+        for event in event_with_deatils:
+            f.write(event + '\n')

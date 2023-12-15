@@ -1,13 +1,27 @@
 import requests
+from bs4 import BeautifulSoup
 
 respone = requests.get(
-    'https://www.myswitzerland.com/de-ch/erlebnisse/veranstaltungen/veranstaltungen-suche/?Datum_from=2024-01-02&Datum_to=2024-02-29&rubrik=topveranstaltungen&p=2&noidx=1')
-print(respone.text)
+    'https://www.myswitzerland.com/de-ch/erlebnisse/veranstaltungen/buere-noeijohr-2024-fasnacht-bueren-an-der-aare-2024/')
 
-respone4 = requests.get(
-    'https://www.myswitzerland.com/de-ch/erlebnisse/veranstaltungen/veranstaltungen-suche/?Datum_from=2024-01-02&Datum_to=2024-02-29&rubrik=topveranstaltungen&p=3&noidx=1')
-print(respone4.text)
 
-respone4 = requests.get(
-    'https://www.myswitzerland.com/de-ch/erlebnisse/veranstaltungen/veranstaltungen-suche/?Datum_from=2024-01-02&Datum_to=2024-02-29&rubrik=topveranstaltungen&p=4&noidx=1')
-print(respone4.text)
+
+# Parse the HTML
+soup = BeautifulSoup(respone.text, 'html.parser')
+
+# Extract the short description
+short_description = soup.find('div', class_='LeadText--text').get_text(strip=True)
+
+# Navigate to the correct 'richtext' for the long description
+article_section_plain = soup.find('div', class_='ArticleSection plain')
+long_description_div = article_section_plain.find('div', class_='richtext')
+long_description = long_description_div.get_text(strip=True)
+
+# Extract the first occurrence of dates
+first_dates_div = soup.find('div', class_='SidebarWidget--body')
+dates = first_dates_div.p.get_text(strip=True)
+
+# Print the extracted information
+print("Short Description:", short_description)
+print("Long Description:", long_description)
+print("Dates:", dates)
