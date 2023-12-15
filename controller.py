@@ -28,7 +28,7 @@ async def get_events_with_details(uuid: uuid.UUID):
     Retrieves a detailed description of an event
 
     Args:
-        item_id (int): The ID of the item to retrieve.
+        item_id (uuid): The ID of the item to retrieve.
 
     Returns:
         An event including its detailed information.

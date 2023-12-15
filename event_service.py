@@ -12,8 +12,10 @@ class Event(BaseModel):
     dates: str
     link: str
 
+    # def get_basic_info(self) -> str:
+    #     return f'{self.uuid}; {self.title}; {self.description}; {self.dates}; {self.link}'
     def get_basic_info(self) -> str:
-        return f'{self.uuid}; {self.title}; {self.description}; {self.dates}; {self.link}'
+        return f'{self.uuid}; {self.title}; {self.description}'
 
     # def get_detailed_information(self) -> Event:
     #     return {
