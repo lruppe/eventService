@@ -25,7 +25,7 @@ async def get_all_events():
     return event_service.get_all_events()
 
 
-@app.get("/events/{uuid}", response_model=Event)
+@app.get("/events/{target_uuid}", response_model=Event)
 async def get_events_with_details(target_uuid: uuid.UUID):
     """
     Retrieves a detailed description of an event
