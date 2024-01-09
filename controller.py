@@ -43,13 +43,13 @@ async def get_events_with_details(target_uuid: uuid.UUID):
     return event
 
 
-@app.get("/events/{date}", response_model=List[str])
+@app.get("/events/by-date/{date}", response_model=List[str])
 async def get_events_by_date(target_date: date):
     """
     Retrieves a list of events happening on a specific date
 
     Args:
-        target_date (date): The date of the events to retrieve.
+        target_date (date): The date in format "YYYY-MM-DD"
 
     Returns:
         A list of events on the target date including their basic information.
