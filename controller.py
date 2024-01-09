@@ -1,4 +1,5 @@
 import uuid
+from datetime import date
 from typing import List
 
 from fastapi import FastAPI
@@ -9,8 +10,9 @@ from event_service import Event
 
 app = FastAPI()
 
+
 @app.get("/events", response_model=List[str])
-async def get_events():
+async def get_all_events():
     """
     Retrieves a list of events
 
@@ -20,22 +22,36 @@ async def get_events():
     Returns:
         A list of events including their basic information.
     """
-    return event_service.get_events()
+    return event_service.get_all_events()
+
 
 @app.get("/events/{uuid}", response_model=Event)
-async def get_events_with_details(uuid: uuid.UUID):
+async def get_events_with_details(target_uuid: uuid.UUID):
     """
     Retrieves a detailed description of an event
 
     Args:
-        item_id (uuid): The ID of the item to retrieve.
+        target_id (uuid): The ID of the item to retrieve.
 
     Returns:
         An event including its detailed information.
+
     """
-    event = event_service.get_event_with_details(uuid)
+    event = event_service.get_event_with_details(target_uuid)
     if event is None:
         raise HTTPException(status_code=404, detail="Event not found")
     return event
 
 
+@app.get("/events/{date}", response_model=List[str])
+async def get_events_by_date(target_date: date):
+    """
+    Retrieves a list of events happening on a specific date
+
+    Args:
+        target_date (date): The date of the events to retrieve.
+
+    Returns:
+        A list of events on the target date including their basic information.
+    """
+    return event_service.get_events_by_date(target_date)
